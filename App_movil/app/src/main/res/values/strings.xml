@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">TFG_App</string>
+    <string name="mail">Correo</string>
+    <string name="password">Contraseña</string>
+    <string name="login">Login</string>
+    <string name="course">Vista de cursos disponibles</string>
+    <string name="course1">Moodle Test</string>
+    <string name="examenes">Vista de examenes disponibles</string>
+    <string name="ex1">Examen1</string>
+    <string name="fototv">Haz la foto al examen</string>
+    <string name="fotobtn">Abrir cámara</string>
+    <string name="viewfoto">Esta es tu imagen</string>
+
+
+</resources>
