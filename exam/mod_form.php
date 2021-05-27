@@ -36,6 +36,9 @@ class mod_exam_mod_form extends moodleform_mod {
         $mform->addElement('select', 'teacherid', get_string('examteacher', 'exam'), exam_get_professors_options());
         $mform->addRule('teacherid', null, 'required', null,'client');
 
+        $mform->addElement('select', 'num_preguntas', get_string('exampreguntas', 'exam'), [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]);
+        $mform->addRule('num_preguntes', null, 'required', null,'client');
+
         $this->standard_coursemodule_elements();
 
         $this->add_action_buttons();

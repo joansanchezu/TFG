@@ -1,20 +1,16 @@
 package com.example.tfg_app;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.biometric.BiometricManager;
 import androidx.biometric.BiometricPrompt;
 import androidx.core.content.ContextCompat;
-
-import org.json.JSONObject;
 
 import java.util.concurrent.Executor;
 
@@ -22,58 +18,22 @@ import static androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRON
 import static androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_WEAK;
 
 public class ReconocimientoHuella extends AppCompatActivity {
-    static final int REQUEST_RECOGNITION = 1000;
-
-    public static JSONObject data;
-
     private Executor executor;
     private BiometricPrompt biometricPrompt;
     private BiometricPrompt.PromptInfo promptInfo;
-    private BiometricPrompt.CryptoObject cryptoObject;
-    private BiometricManager biometricManager;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reconocimiento_huella);
 
-        enrolFingerprints();
-        // secretKeyName = getString(R.string.secret_key_name);
         biometricPrompt = createBiometricPromt();
         promptInfo = createPromptInfo();
 
         Button biometricLoginButton = findViewById(R.id.btn_auth);
         biometricLoginButton.setOnClickListener(view -> {
-            // Cipher cipher = cryptoObject.getCipher();
-            // biometricPrompt.authenticate(promptInfo, new BiometricPrompt.CryptoObject(cipher));
             biometricPrompt.authenticate(promptInfo);
         });
-    }
-
-    private void generateSecretKey() {
-
-    }
-
-    // Función que registra el BiometricManager
-    private void enrolFingerprints() {
-        biometricManager = BiometricManager.from(this);
-        switch (biometricManager.canAuthenticate(BIOMETRIC_STRONG | BIOMETRIC_WEAK)) {
-            case BiometricManager.BIOMETRIC_SUCCESS:
-                Log.d("MY_APP_TAG", "App can authenticate using biometrics.");
-                break;
-            case BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE:
-                Log.e("MY_APP_TAG", "No biometric features available on this device.");
-                break;
-            case BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE:
-                Log.e("MY_APP_TAG", "Biometric features are currently unavailable.");
-                break;
-            case BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED:
-                // Prompts the user to create credentials that your app accepts.
-                final Intent enrollIntent = new Intent(Settings.ACTION_BIOMETRIC_ENROLL);
-                enrollIntent.putExtra(Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED, BIOMETRIC_STRONG | BIOMETRIC_WEAK);
-                startActivityForResult(enrollIntent, REQUEST_RECOGNITION);
-                break;
-        }
     }
 
     // Función que crea un BiometricPrompt
@@ -85,16 +45,20 @@ public class ReconocimientoHuella extends AppCompatActivity {
                     public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
                         super.onAuthenticationError(errorCode, errString);
                         Toast.makeText(getApplicationContext(), "Authentication error: " + errString, Toast.LENGTH_SHORT).show();
-                        Intent SelectExam = new Intent(ReconocimientoHuella.this, Exam.class);
-                        startActivity(SelectExam);
+
+                        Intent returnIntent = new Intent();
+                        setResult(Activity.RESULT_CANCELED, returnIntent);
+                        finish();
                     }
 
                     @Override
                     public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
                         super.onAuthenticationSucceeded(result);
                         Toast.makeText(getApplicationContext(), "Authentication succeeded!", Toast.LENGTH_SHORT).show();
-                        Intent Foto = new Intent(ReconocimientoHuella.this, Foto.class);
-                        startActivity(Foto);
+
+                        Intent returnIntent = new Intent();
+                        setResult(Activity.RESULT_OK, returnIntent);
+                        finish();
                     }
 
                     @Override
@@ -119,11 +83,4 @@ public class ReconocimientoHuella extends AppCompatActivity {
 
         return promptInfo;
     }
-
-    //Función para el reconocimiento de huella
-    public void Reconigtion(View view) {
-        // Intent SelectExam = new Intent(this, Foto.class);
-        // startActivity(SelectExam);
-    }
-
 }

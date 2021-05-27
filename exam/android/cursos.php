@@ -1,6 +1,6 @@
 <?php
 
-$conn = mysqli_connect("localhost", "JoanTest", "JoanTest", "moodle");
+$conn = mysqli_connect("localhost", "admin", "admin", "moodle");
 $result = array();
 
 $id_user = $_POST['id_user'];

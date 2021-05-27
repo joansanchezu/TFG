@@ -1,25 +1,40 @@
+
 package com.example.tfg_app;
+
+import android.content.Intent;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class HttpConn extends AppCompatActivity {
     String data = "";
     String activity = "";
-    String connstr = "http://192.168.1.40//";
+    String connstr = "http://192.168.1.34//";
+    public static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
     JSONObject json;
 
     public void conn(Map<String, String> parametros) throws InterruptedException {
@@ -27,14 +42,27 @@ public class HttpConn extends AppCompatActivity {
             //doInBackground
             doConnection(parametros);
 
-            //postExecute
-
             switch (activity){
-                case "Main":
+                case "Login":
                     try {
                         MainActivity.valido = json.getString("valido");
-                        MainActivity.user = json.getString("id_user");
-
+                        MainActivity.user = json.getJSONObject("user");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case "Huella":
+                    try {
+                        if (json.getString("huella") != "null") {
+                            MainActivity.huella = json.getString("huella");
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case "Registro":
+                    try {
+                        RegistroHuella.valido = json.getString("challenge");
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -48,16 +76,25 @@ public class HttpConn extends AppCompatActivity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+                    break;
                 case "Examenes":
                     try {
                         for(int i=0; i<json.length(); i++){
                             Exam.examenes.put(String.valueOf(i), json.getJSONObject(String.valueOf(i)));
                         }
-
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+                    break;
+                case "Reconocimiento":
+                    try {
+                        Exam.valido = json.getString("challenge");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    break;
             }
+            json = new JSONObject();
         });
 
         t.start();
@@ -70,13 +107,14 @@ public class HttpConn extends AppCompatActivity {
 
     private void doConnection(Map<String, String> parametros) {
         try {
+            String urlstr = "";
             StringBuilder postData = new StringBuilder();
 
             for (Map.Entry<String, String> parametro : parametros.entrySet()) {
-                if (parametro.getKey().equals("url")) {
-                    connstr = connstr + parametro.getValue();
+                if (parametro.getKey() == "url") {
+                    urlstr = connstr + parametro.getValue();
                 } else {
-                    if (parametro.getKey().equals("activity")) {
+                    if (parametro.getKey() == "activity") {
                         activity = parametro.getValue();
                     }
                     else {
@@ -89,17 +127,19 @@ public class HttpConn extends AppCompatActivity {
                     }
                 }
             }
-            byte[] postDataBytes = postData.toString().getBytes(StandardCharsets.UTF_8);
+            byte[] postDataBytes = postData.toString().getBytes("UTF-8");
 
-            URL url = new URL(connstr);
+            URL url = new URL(urlstr);
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod("POST");
             http.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             http.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
             http.setDoOutput(true);
+            http.setDoInput(true);
             http.getOutputStream().write(postDataBytes);
 
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(http.getInputStream(), "UTF-8"));
+            InputStream inputStream = http.getInputStream();
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 
             String line = "";
             while ((line = bufferedReader.readLine()) != null){
@@ -109,6 +149,9 @@ public class HttpConn extends AppCompatActivity {
             }
 
             json = new JSONObject(data);
+            data = "";
+
+            inputStream.close();
             bufferedReader.close();
             http.disconnect();
         } catch (MalformedURLException e) {
@@ -120,75 +163,3 @@ public class HttpConn extends AppCompatActivity {
         }
     }
 }
-
-/*
-public class HttpConn extends AsyncTask<Map<String, String>, Void, Void> {
-    String data = "";
-    String activity = "";
-    String connstr = "http://192.168.1.74//moodle/mod/exam/manager.php";
-    JSONObject json;
-    private Context context;
-
-    @Override
-    protected Void doInBackground(Map<String, String>... params) {
-        try {
-            URL url = new URL(connstr);
-            StringBuilder postData = new StringBuilder();
-            Map<String, String> parametros = params[0];
-
-            for (Map.Entry<String, String> parametro : parametros.entrySet()) {
-                if (parametro.getKey() == "activity") {
-                    activity = parametro.getValue();
-                }
-                else {
-                    if (postData.length() != 0) {
-                        postData.append('&');
-                    }
-                    postData.append(URLEncoder.encode(parametro.getKey(), "UTF-8"));
-                    postData.append('=');
-                    postData.append(URLEncoder.encode(String.valueOf(parametro.getValue()), "UTF-8"));
-                }
-            }
-            byte[] postDataBytes = postData.toString().getBytes("UTF-8");
-
-            HttpURLConnection http = (HttpURLConnection) url.openConnection();
-            http.setRequestMethod("POST");
-            http.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            http.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
-            http.setDoOutput(true);
-            http.getOutputStream().write(postDataBytes);
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(http.getInputStream(), "UTF-8"));
-
-            String line = "";
-            while (line != null){
-                line = bufferedReader.readLine();
-                if (line != null){
-                    data = data + line;
-                }
-            }
-
-            json = new JSONObject(data);
-            bufferedReader.close();
-            http.disconnect();
-
-        } catch (MalformedURLException e) {
-            String result = e.getMessage();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-             e.printStackTrace();
-        }
-        return null;
-    }
-
-    @Override
-    protected void onPostExecute(Void aVoid) {
-        super.onPostExecute(aVoid);
-        switch (activity) {
-            case "Main":
-                Intent intent = new Intent();
-                break;
-        }
-    }
-}
-*/

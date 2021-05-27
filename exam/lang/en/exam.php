@@ -6,5 +6,5 @@ $string['modulename_help'] = 'Exam module enables the teacher to deliver the exa
 $string['examname'] = "Name of the exam task.";
 $string['examopen'] = "Open the exam";
 $string['examclose'] = "Close the exam";
-$string['examteacher'] = "Username of teachers";
-$string['examerrortime'] = "Close exam time have to be greater than open time";
+$string['examteacher'] = "Username of teachers";$string['examerrortime'] = "Close exam time have to be greater than open time";
+

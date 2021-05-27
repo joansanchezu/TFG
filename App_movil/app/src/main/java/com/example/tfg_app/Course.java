@@ -11,21 +11,13 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.Volley;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserFactory;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Course extends AppCompatActivity {
-
     public static JSONObject cursos = new JSONObject();
     public static String id_curso;
 
@@ -35,33 +27,30 @@ public class Course extends AppCompatActivity {
         setContentView(R.layout.activity_course);
 
         Map<String, String> parametros = new LinkedHashMap<>();
+        HttpConn http = new HttpConn();
 
         parametros.put("url", "moodle/mod/exam/android/cursos.php");
         parametros.put("activity", "Cursos");
-        parametros.put("id_user", MainActivity.user);
-
-
-        HttpConn http = new HttpConn();
         try {
+            parametros.put("id_user", MainActivity.user.getString("id"));
             http.conn(parametros);
-        } catch (InterruptedException e) {
+        } catch (JSONException | InterruptedException e) {
             e.printStackTrace();
         }
 
-        if (cursos !=null){
+        if (cursos != null) {
             LinearLayout linearLayout = findViewById(R.id.linear_layout_course);
             //Adding TextViews
             for (int i = 0; i < cursos.length(); i++) {
                 try {
-                    // Creamos y asignamos TextView del curso.
                     TextView textView = new TextView(this);
                     JSONObject j = cursos.getJSONObject(String.valueOf(i));
                     textView.setText(j.getString("name"));
 
                     // Configuramos las propiedades del TextView
                     setTextViewAttributes(textView);
-
                     int finalI = i;
+
                     textView.setOnClickListener(v -> {
                         try {
                             id_curso = cursos.getJSONObject(String.valueOf(finalI)).getString("id");
@@ -70,12 +59,12 @@ public class Course extends AppCompatActivity {
                             e.printStackTrace();
                         }
                     });
+
                     // Añadimos el TextView a la pantalla.
                     linearLayout.addView(textView);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
             }
         }
     }
@@ -104,7 +93,6 @@ public class Course extends AppCompatActivity {
 
     //Función para la selección de curso
     public void SelectCourse(View view){
-
         Intent SelectCourse = new Intent(this, Exam.class);
         startActivity(SelectCourse);
     }

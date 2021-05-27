@@ -1,5 +1,6 @@
 package com.example.tfg_app;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
@@ -7,6 +8,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -15,13 +17,28 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.Signature;
+import java.security.SignatureException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Exam extends AppCompatActivity {
-
+    private static final int REGISTRO_HUELLA = 2;
     public static JSONObject examenes = new JSONObject();
     public static String id_exam;
+    public static String valido;
+    private Signature sign;
+    private byte[] signature;
+    private String signEncoded;
+    private PrivateKey priv;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -35,7 +52,6 @@ public class Exam extends AppCompatActivity {
         parametros.put("activity", "Examenes");
         parametros.put("id_curso", Course.id_curso);
 
-
         HttpConn http = new HttpConn();
         try {
             http.conn(parametros);
@@ -43,7 +59,7 @@ public class Exam extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        if (examenes !=null){
+        if (examenes != null){
             LinearLayout linearLayout = findViewById(R.id.linear_layout_exams);
             //Adding TextViews
             for (int i = 0; i < examenes.length(); i++) {
@@ -62,7 +78,7 @@ public class Exam extends AppCompatActivity {
                             id_exam = examenes.getJSONObject(String.valueOf(finalI)).getString("id");
                             SelectExam(v);
 
-                        } catch (JSONException e) {
+                        } catch (JSONException | KeyStoreException | CertificateException | NoSuchAlgorithmException | IOException | UnrecoverableKeyException | InvalidKeyException | SignatureException e) {
                             e.printStackTrace();
                         }
                     });
@@ -71,11 +87,8 @@ public class Exam extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
             }
         }
-
-
     }
 
     @Override
@@ -106,13 +119,61 @@ public class Exam extends AppCompatActivity {
         return Math.round(px);
     }
 
-
-
     //Función para la selección de examen
-    public void SelectExam(View view) {
+    private void SelectExam(View view) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, UnrecoverableKeyException, InvalidKeyException, SignatureException {
+        KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
+        keyStore.load(null);
+
+        priv = (PrivateKey) keyStore.getKey(MainActivity.username.getText().toString(), null);
+
+        sign = Signature.getInstance("SHA256withRSA");
+        sign.initSign(priv);
+        sign.update("test".getBytes());
+
+
         Intent SelectExam = new Intent(this, ReconocimientoHuella.class);
         // Intent SelectExam = new Intent(this, Foto.class);
-        startActivity(SelectExam);
+        startActivityForResult(SelectExam, REGISTRO_HUELLA);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if ( requestCode == REGISTRO_HUELLA ) {
+            if (resultCode == RESULT_OK) {
+                try {
+                    signature = sign.sign();
+                } catch (SignatureException e) {
+                    e.printStackTrace();
+                }
+                signEncoded = new String(Base64.encode(signature, Base64.DEFAULT));
+
+                Map<String, String> parametros = new LinkedHashMap<>();
+                HttpConn http = new HttpConn();
+
+                parametros.put("url", "moodle/mod/exam/android/autenticacio.php");
+                parametros.put("activity", "Reconocimiento");
+                parametros.put("signature", signEncoded);
+                parametros.put("data", "test");
+                try {
+                    parametros.put("userid", MainActivity.user.getString("id"));
+                    http.conn(parametros);
+                } catch (InterruptedException | JSONException e) {
+                    e.printStackTrace();
+                }
+                if (valido.equals("true")) {
+                    valido = "false";
+                    Intent foto = new Intent(Exam.this, Foto.class);
+                    startActivity(foto);
+                } else {
+                    Intent course = new Intent(Exam.this, Course.class);
+                    startActivity(course);
+                }
+            }
+            if (resultCode == RESULT_CANCELED) {
+                System.out.println("ERROR!!");
+            }
+        }
+    }
 }
