@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">TFG_App</string>
+    <string name="user">Usuario</string>
+    <string name="password">Contraseña</string>
+    <string name="login">Login</string>
+    <string name="course">Vista de cursos disponibles</string>
+    <string name="course1">Moodle Test</string>
+    <string name="examenes">Vista de examenes disponibles</string>
+    <string name="ex1">Examen1</string>
+    <string name="fototv">Haz la foto al examen</string>
+    <string name="fotobtn">Abrir cámara</string>
+    <string name="viewfoto">Esta es tu imagen</string>
+    <string name="btn_auth">Autentificación</string>
+    <string name="upload_file">Subir archivo</string>
+    <string name="pdf_name">Escoge el nombre del PDF</string>
+    <string name="select_pdf">Selecciona un PDF para subir</string>
+    <string name="Subiendo_archivo">El archivo se esta subiendo, por favor espera.</string>
+
+
+
+</resources>
