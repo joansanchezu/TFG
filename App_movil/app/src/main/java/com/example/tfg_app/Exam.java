@@ -34,6 +34,7 @@ public class Exam extends AppCompatActivity {
     private static final int REGISTRO_HUELLA = 2;
     public static JSONObject examenes = new JSONObject();
     public static String id_exam;
+    public static String exam_name;
     public static String valido;
     private Signature sign;
     private byte[] signature;
@@ -76,6 +77,7 @@ public class Exam extends AppCompatActivity {
                     textView.setOnClickListener(v -> {
                         try {
                             id_exam = examenes.getJSONObject(String.valueOf(finalI)).getString("id");
+                            exam_name = examenes.getJSONObject(String.valueOf(finalI)).getString("name");
                             SelectExam(v);
 
                         } catch (JSONException | KeyStoreException | CertificateException | NoSuchAlgorithmException | IOException | UnrecoverableKeyException | InvalidKeyException | SignatureException e) {

@@ -11,6 +11,11 @@
     <string name="fotobtn">Abrir cámara</string>
     <string name="viewfoto">Esta es tu imagen</string>
     <string name="btn_auth">Autentificación</string>
+    <string name="upload_file">Subir archivo</string>
+    <string name="pdf_name">Escoge el nombre del PDF</string>
+    <string name="select_pdf">Selecciona un PDF para subir</string>
+    <string name="Subiendo_archivo">El archivo se esta subiendo, por favor espera.</string>
+
 
 
 </resources>

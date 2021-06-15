@@ -10,24 +10,35 @@
         android:id="@+id/imageBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:background="@android:color/transparent"
         android:contentDescription="@string/fotobtn"
+        android:onClick="TakePhoto"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:onClick="TakePhoto"
         app:layout_constraintTop_toBottomOf="@+id/imageView"
         app:srcCompat="@drawable/camara" />
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="325dp"
-        android:layout_height="425dp"
+        android:layout_width="250dp"
+        android:layout_height="321dp"
         android:layout_marginTop="40dp"
         android:contentDescription="@string/viewfoto"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/previo" />
+
+    <Button
+        android:id="@+id/select_pdf"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:onClick="Select_pdf"
+        android:text="@string/upload_file"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageBtn" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

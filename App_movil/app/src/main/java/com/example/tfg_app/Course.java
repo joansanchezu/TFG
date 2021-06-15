@@ -20,6 +20,7 @@ import java.util.Map;
 public class Course extends AppCompatActivity {
     public static JSONObject cursos = new JSONObject();
     public static String id_curso;
+    public static String name_curso;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +55,7 @@ public class Course extends AppCompatActivity {
                     textView.setOnClickListener(v -> {
                         try {
                             id_curso = cursos.getJSONObject(String.valueOf(finalI)).getString("id");
+                            name_curso = cursos.getJSONObject(String.valueOf(finalI)).getString("idnumber");
                             SelectCourse(v);
                         } catch (JSONException e) {
                             e.printStackTrace();

@@ -33,7 +33,7 @@ import okhttp3.Response;
 public class HttpConn extends AppCompatActivity {
     String data = "";
     String activity = "";
-    String connstr = "http://192.168.1.34//";
+    String connstr = "http://192.168.1.40//";
     public static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
     JSONObject json;
 
