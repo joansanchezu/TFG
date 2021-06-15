@@ -1,6 +1,6 @@
 <?php
 /**
- * @package local_message
+ * @package exam
  * @author Víctor
  * @var stdClass $plugin
  */
@@ -33,8 +33,22 @@ function exam_add_instance($data){
         $data->userid = $USER->id;
 
         $data->teacherid = $DB->get_record_sql('SELECT id FROM {user} WHERE username = ?', array($data->teacherid))->id;
-
         $id = $DB->insert_record('exam', $data);
+
+        $context = context_course::instance($COURSE->id);
+        $role = $DB->get_record('role', array('shortname' => 'student'));
+        $students = get_role_users($role->id, $context);
+        $validacio = new stdClass();
+
+        foreach ($students as $student){
+            $validacio->courseid = $COURSE->id;
+            $validacio->userid = $student->id;
+            $validacio->examid = $id;
+            $validacio->examdir = '/';
+            $validacio->estado = "0";
+            $validacio->validado = "0";
+            $id_v = $DB->insert_record('exam_validacion', $validacio);
+        }
 
         return $id;
     }

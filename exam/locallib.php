@@ -22,6 +22,31 @@ class exam {
             $SESSION->mod_assign_useridlist = [];
         }
     }
+
+    /**
+     * View entire grading page.
+     *
+     * @return string
+     */
+    protected function view_grading_page() {
+        global $CFG;
+
+        $o = '';
+        // Need submit permission to submit an assignment.
+        $this->require_view_grades();
+        require_once($CFG->dirroot . '/mod/assign/gradeform.php');
+
+        $this->add_grade_notices();
+
+        // Only load this if it is.
+        $o .= $this->view_grading_table();
+
+        $o .= $this->view_footer();
+
+        \mod_assign\event\grading_table_viewed::create_from_assign($this)->trigger();
+
+        return $o;
+    }
 }
 
 
@@ -42,4 +67,17 @@ function exam_get_professors_options():array {
         $t[$teacher->username] = $name;
     }
     return $t;
+}
+
+
+/**
+ * @return array string => lang string the options for handling overdue quiz
+ *      attempts.
+ */
+function exam_get_students():array {
+    global $COURSE, $DB;
+    $context = context_course::instance($COURSE->id);
+    $role = $DB->get_record('role', array('shortname' => 'student'));
+    $student = get_role_users($role->id, $context);
+    return $student;
 }
