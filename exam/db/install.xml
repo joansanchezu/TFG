@@ -16,6 +16,7 @@
                 <FIELD NAME="timeclose" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" />
                 <FIELD NAME="teacherid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" />
                 <FIELD NAME="num_preguntas" TYPE="int" LENGTH="2" NOTNULL="true" SEQUENCE="false" />
+                <FIELD NAME="publicar_notas" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" />
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="Primary key for exam"/>
@@ -40,12 +41,12 @@
         <TABLE NAME="exam_validacion" COMMENT="Define la validación">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"/>
-                <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
                 <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
                 <FIELD NAME="examid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
                 <FIELD NAME="examdir" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" />
                 <FIELD NAME="estado" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" />
-                <FIELD NAME="validado" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" />
+                <FIELD NAME="notas" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" />
+                <FIELD NAME="nota_final" TYPE="float" LENGTH="2" NOTNULL="false" SEQUENCE="false" />
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

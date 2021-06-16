@@ -1,17 +1,21 @@
 <?php
+
+global $CFG;
+
 require(__DIR__.'/../../config.php');
 require_once(__DIR__.'/lib.php');
 require_once($CFG->libdir.'/completionlib.php');
 
 $id        = optional_param('id', 0, PARAM_INT);        // Course Module ID
-$bid       = optional_param('b', 0, PARAM_INT);         // Book id
+$bid       = optional_param('b', 0, PARAM_INT);         // Exam id
 //$edit      = optional_param('edit', -1, PARAM_BOOL);    // Edit mode
-
 
 // =========================================================================
 // security checks START - teachers edit; students view
 // =========================================================================
-GLOBAL $USER;
+
+global $USER, $DB, $PAGE, $OUTPUT;
+
 if ($id) {
     $cm = get_coursemodule_from_id('exam', $id, 0, false, MUST_EXIST);
     $course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
@@ -61,9 +65,19 @@ if ($USER->id == $teacher->id){
 
     echo $OUTPUT->heading(format_string("Sumario de calificaciones"));
 
+    $noentregado = $DB->get_records('exam_validacion', array('courseid'=>$course->id, 'estado'=>0));
+    $entregado = $DB->get_records('exam_validacion', array('courseid'=>$course->id, 'estado'=>1));
+    $validado = $DB->get_records('exam_validacion', array('courseid'=>$course->id, 'estado'=>2));
+    $denegado = $DB->get_records('exam_validacion', array('courseid'=>$course->id, 'estado'=>3));
+
+    $url = '/mod/exam/validar_estudiante.php?examid=' . $exam->id;
     $templatecontext = (object)[
-        'validarurl' => new moodle_url('/mod/exam/validar_estudiante.php'),
+        'validarurl' => new moodle_url($url),
         'numpart' => count($students),
+        'numnoent' => count($noentregado),
+        'nument' => count($entregado),
+        'numval' => count($validado),
+        'numden' => count($denegado),
     ];
 
     echo $OUTPUT->render_from_template('exam/exam_view', $templatecontext);
@@ -73,7 +87,7 @@ if ($USER->id == $teacher->id){
     echo $OUTPUT->header();
     echo $OUTPUT->heading(format_string($exam->name));
 
-    if ($exam->timeopen > time()){
+    if (false){//$exam->timeopen > time()){
         // Printamos que el examen no ha comenzado
         $tiempo_restante = strtotime($exam->timeopen);
         $templatecontext = (object)[
@@ -82,6 +96,14 @@ if ($USER->id == $teacher->id){
         echo $OUTPUT->render_from_template('exam/manage', $templatecontext);
     }else{
         // Miramos si se ha entregado ho no.
+        $res = $DB->get_record('exam_validacion', array('examid'=>$exam->id, 'userid'=>$USER->id), '*', MUST_EXIST);
+        if ($exam->publicar_notas) {
+            echo $OUTPUT->render_from_template('exam/exam_notas_publicadas', (object)[] );
+        } else {
+            if ($res->estado == 2) {
+                echo "HAOIHIOAH";
+            }
+        }
     }
 
     echo $OUTPUT->footer();

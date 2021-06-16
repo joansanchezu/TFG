@@ -31,6 +31,7 @@ function exam_add_instance($data){
         $data->timemodified = $data->timecreated;
         $data->courseid = $COURSE->id;
         $data->userid = $USER->id;
+        $data->publicar_notas = 0;
 
         $data->teacherid = $DB->get_record_sql('SELECT id FROM {user} WHERE username = ?', array($data->teacherid))->id;
         $id = $DB->insert_record('exam', $data);
