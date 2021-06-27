@@ -65,10 +65,10 @@ if ($USER->id == $teacher->id){
 
     echo $OUTPUT->heading(format_string("Sumario de calificaciones"));
 
-    $noentregado = $DB->get_records('exam_validacion', array('courseid'=>$course->id, 'estado'=>0));
-    $entregado = $DB->get_records('exam_validacion', array('courseid'=>$course->id, 'estado'=>1));
-    $validado = $DB->get_records('exam_validacion', array('courseid'=>$course->id, 'estado'=>2));
-    $denegado = $DB->get_records('exam_validacion', array('courseid'=>$course->id, 'estado'=>3));
+    $noentregado = $DB->get_records('exam_validacion', array('examid'=>$exam->id, 'estado'=>0));
+    $entregado = $DB->get_records('exam_validacion', array('examid'=>$exam->id, 'estado'=>1));
+    $validado = $DB->get_records('exam_validacion', array('examid'=>$exam->id, 'estado'=>2));
+    $denegado = $DB->get_records('exam_validacion', array('examid'=>$exam->id, 'estado'=>3));
 
     $url = '/mod/exam/validar_estudiante.php?examid=' . $exam->id;
     $templatecontext = (object)[
@@ -108,4 +108,3 @@ if ($USER->id == $teacher->id){
 
     echo $OUTPUT->footer();
 }
-

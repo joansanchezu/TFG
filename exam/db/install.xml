@@ -16,7 +16,6 @@
                 <FIELD NAME="timeclose" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" />
                 <FIELD NAME="teacherid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" />
                 <FIELD NAME="num_preguntas" TYPE="int" LENGTH="2" NOTNULL="true" SEQUENCE="false" />
-                <FIELD NAME="publicar_notas" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" />
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="Primary key for exam"/>
@@ -25,6 +24,8 @@
                 <KEY NAME="teacherid" TYPE="foreign" FIELDS="teacherid" REFTABLE="user" REFFIELDS="id" COMMENT="The instance of mod_user this submission belongs to."/>
             </KEYS>
         </TABLE>
+
+
 
         <TABLE NAME="exam_huella" COMMENT="Define una huella">
             <FIELDS>
@@ -38,6 +39,8 @@
             </KEYS>
         </TABLE>
 
+
+
         <TABLE NAME="exam_validacion" COMMENT="Define la validación">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"/>
@@ -45,14 +48,32 @@
                 <FIELD NAME="examid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
                 <FIELD NAME="examdir" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" />
                 <FIELD NAME="estado" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" />
+                <FIELD NAME="validado" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" />
                 <FIELD NAME="notas" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" />
-                <FIELD NAME="nota_final" TYPE="float" LENGTH="2" NOTNULL="false" SEQUENCE="false" />
+                <FIELD NAME="nota_final" TYPE="float" LENGTH="5" NOTNULL="false" SEQUENCE="false" />
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-                <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="groups_courses_groupings" REFFIELDS="courseid" COMMENT="The instance of mod_groups_courses_groupings this submission belongs to."/>
                 <KEY NAME="user" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id" COMMENT="The instance of mod_user this submission belongs to."/>
                 <KEY NAME="exam" TYPE="foreign" FIELDS="examid" REFTABLE="exam" REFFIELDS="id" COMMENT="The instance of mod_exam this submission belongs to."/>
+            </KEYS>
+        </TABLE>
+
+
+
+        <TABLE NAME="exam_files" COMMENT="Se guarda la información relacionada con el pdf del examen">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"/>
+                <FIELD NAME="pdf_url" TYPE="char" LENGTH="500" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="pdf_name" TYPE="char" LENGTH="500" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="user_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="exam_id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"/>
+                <FIELD NAME="fecha_entrega" TYPE="char" LENGTH="500" NOTNULL="true" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="user" TYPE="foreign" FIELDS="user_id" REFTABLE="user" REFFIELDS="id" COMMENT="The instance of mod_user this submission belongs to."/>
+                <KEY NAME="exam" TYPE="foreign" FIELDS="exam_id" REFTABLE="exam" REFFIELDS="id" COMMENT="The instance of mod_exam this submission belongs to."/>
             </KEYS>
         </TABLE>
     </TABLES>

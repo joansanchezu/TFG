@@ -48,8 +48,58 @@ foreach ($students as $student) {
         $nombre = $user->firstname . ' ' . $user->lastname;
         echo $OUTPUT->render_from_template('exam/exam_validacion', (object)['param'=>$user->username]);
         echo $OUTPUT->render_from_template('exam/exam_validacion', (object)['param'=>$nombre]);
-        # $pdf = $DB->get_record('exam_pdf', array('userid'=>$student->id,'examid'=>$examid), '*', MUST_EXIST);
-        echo $OUTPUT->render_from_template('exam/exam_validacion_ref', (object)['param'=>'27 de mayo de 2021, 15:49', 'href'=>$student->examdir]);
+
+        $pdf = $DB->get_record('exam_files', array('user_id' => $student->userid, 'exam_id' => $examid), '*', MUST_EXIST);
+        $fecha = explode('_', $pdf->fecha_entrega);
+
+        $año = substr($fecha[0], 0, 4);
+        $mes = substr($fecha[0], 4, 2);
+        $dia = substr($fecha[0], 6, 2);
+
+        $hora = substr($fecha[1], 0, 2);
+        $min = substr($fecha[1], 2, 2);
+        $seg = substr($fecha[1], 4, 2);
+
+        switch ($mes) {
+            case "01":
+                $mes = "Enero";
+                break;
+            case "02":
+                $mes = "Febrero";
+                break;
+            case "03":
+                $mes = "Marzo";
+                break;
+            case "04":
+                $mes = "Abril";
+                break;
+            case "05":
+                $mes = "Mayo";
+                break;
+            case "06":
+                $mes = "Junio";
+                break;
+            case "07":
+                $mes = "Julio";
+                break;
+            case "08":
+                $mes = "Agosto";
+                break;
+            case "09":
+                $mes = "Septiembre";
+                break;
+            case "10":
+                $mes = "Octubre";
+                break;
+            case "11":
+                $mes = "Noviembre";
+                break;
+            case "12":
+                $mes = "Diciembre";
+                break;
+        }
+        $fecha_completa = $dia . " de " . $mes . " del " . $año . " a las " . $hora . ":" . $min . ":" . $seg;
+        echo $OUTPUT->render_from_template('exam/exam_validacion_ref', (object)['param'=>$fecha_completa, 'href'=>$pdf->pdf_url]);
 
         $estado = "";
         switch ($student->estado) {

@@ -7,7 +7,7 @@ $id_curso = $_POST['id_curso'];
 
 $sql = "SELECT `id`,`name`, DATE_FORMAT(FROM_UNIXTIME(`timeopen`),'%Y-%m-%d %k:%i') AS abierto, DATE_FORMAT(FROM_UNIXTIME(`timeclose`),'%Y-%m-%d %k:%i') AS cerrado 
 FROM `mdl_exam` 
-WHERE `courseid` = $id_curso
+WHERE `courseid` = '$id_curso'
 ORDER BY `abierto` ASC";
 
 
